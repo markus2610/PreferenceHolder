@@ -2,7 +2,7 @@ package com.marcinmoskala.kotlinpreferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.marcinmoskala.kotlinpreferences.bindings.*
 import java.lang.reflect.Type
 import kotlin.properties.ReadWriteProperty
@@ -93,6 +93,6 @@ abstract class PreferenceHolder {
 
         internal var preferences: SharedPreferences? = null
 
-        internal fun getPreferencesOrThrowError(): SharedPreferences = PreferenceHolder.preferences ?: throw Error(noPreferencesSetErrorText)
+        internal fun getPreferencesOrThrowError(): SharedPreferences = preferences ?: throw Error(noPreferencesSetErrorText)
     }
 }
