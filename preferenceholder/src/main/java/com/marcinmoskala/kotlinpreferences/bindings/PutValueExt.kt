@@ -24,7 +24,7 @@ internal fun <T : Any> SharedPreferences.getFromPreference(clazz: KClass<T>, typ
     "String" -> getString(key, default as? String) as? T
     "Boolean" -> getBoolean(key, default as Boolean) as? T
     "Float" -> getFloat(key, default as Float) as? T
-    else -> getString(key, default.serialize()).deserialize(type)
+    else -> getString(key, default.serialize())?.deserialize(type)
 }
 
 internal fun <T: Any> SharedPreferences.getFromPreference(clazz: KClass<T>, type: Type, key: String): T?
