@@ -6,14 +6,17 @@ import java.lang.reflect.Modifier
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.lang.reflect.WildcardType
-import java.util.Arrays
 
 open class TypeToken<T> protected constructor() {
 
     private val superclass = javaClass.genericSuperclass as ParameterizedType
     val type: Type = canonicalize(superclass.actualTypeArguments[0])
 
-    private class ParameterizedTypeImpl(ownerType: Type?, rawType: Type, vararg typeArguments: Type) : ParameterizedType, Serializable {
+    private class ParameterizedTypeImpl(
+        ownerType: Type?,
+        rawType: Type,
+        vararg typeArguments: Type
+    ) : ParameterizedType, Serializable {
         private val ownerType: Type?
         private val rawType: Type
         private val typeArguments: List<Type>
@@ -21,7 +24,8 @@ open class TypeToken<T> protected constructor() {
         init {
             // require an owner type if the raw type needs it
             if (rawType is Class<*>) {
-                val isStaticOrTopLevelClass = Modifier.isStatic(rawType.modifiers) || rawType.enclosingClass == null
+                val isStaticOrTopLevelClass =
+                    Modifier.isStatic(rawType.modifiers) || rawType.enclosingClass == null
                 checkArgument(ownerType != null || isStaticOrTopLevelClass)
             }
 
@@ -61,7 +65,8 @@ open class TypeToken<T> protected constructor() {
         override fun toString() = typeToString(componentType) + "[]"
     }
 
-    private class WildcardTypeImpl(upperBounds: Array<Type>, lowerBounds: Array<Type>) : WildcardType, Serializable {
+    private class WildcardTypeImpl(upperBounds: Array<Type>, lowerBounds: Array<Type>) :
+        WildcardType, Serializable {
         private val upperBound: Type
         private val lowerBound: Type?
 
@@ -75,7 +80,6 @@ open class TypeToken<T> protected constructor() {
                 checkArgument(upperBounds[0] === Any::class.java)
                 this.lowerBound = canonicalize(lowerBounds[0])
                 this.upperBound = Any::class.java
-
             } else {
                 checkNotNull(upperBounds[0])
                 checkNotPrimitive(upperBounds[0])
@@ -87,7 +91,7 @@ open class TypeToken<T> protected constructor() {
         override fun getUpperBounds() = arrayOf(upperBound)
 
         override fun getLowerBounds() =
-                if (lowerBound != null) arrayOf(lowerBound) else EMPTY_TYPE_ARRAY
+            if (lowerBound != null) arrayOf(lowerBound) else EMPTY_TYPE_ARRAY
 
         override fun toString(): String = when {
             lowerBound != null -> "? super " + typeToString(lowerBound)
@@ -100,17 +104,18 @@ open class TypeToken<T> protected constructor() {
 
         internal val EMPTY_TYPE_ARRAY = arrayOf<Type>()
 
-        internal fun canonicalize(type: Type): Type = if (type is Class<*>) {
-            if (type.isArray) GenericArrayTypeImpl(canonicalize(type.componentType)) else type
-        } else if (type is ParameterizedType) {
-            ParameterizedTypeImpl(type.ownerType, type.rawType, *type.actualTypeArguments)
-        } else if (type is GenericArrayType) {
-            GenericArrayTypeImpl(type.genericComponentType)
-        } else if (type is WildcardType) {
-            WildcardTypeImpl(type.upperBounds, type.lowerBounds)
-        } else {
-            type
-        }
+        internal fun canonicalize(type: Type): Type =
+            if (type is Class<*> && type.isArray) {
+                GenericArrayTypeImpl(canonicalize(type.componentType as Type))
+            } else if (type is ParameterizedType) {
+                ParameterizedTypeImpl(type.ownerType, type.rawType, *type.actualTypeArguments)
+            } else if (type is GenericArrayType) {
+                GenericArrayTypeImpl(type.genericComponentType)
+            } else if (type is WildcardType) {
+                WildcardTypeImpl(type.upperBounds, type.lowerBounds)
+            } else {
+                type
+            }
 
         internal fun typeToString(type: Type): String {
             return if (type is Class<*>) type.name else type.toString()
@@ -120,7 +125,8 @@ open class TypeToken<T> protected constructor() {
             checkArgument(type !is Class<*> || !type.isPrimitive)
         }
 
-        internal fun <T> checkNotNull(obj: T?): T = if (obj != null) obj else throw NullPointerException()
+        internal fun <T> checkNotNull(obj: T?): T =
+            if (obj != null) obj else throw NullPointerException()
 
         internal fun checkArgument(condition: Boolean) {
             if (!condition) throw IllegalArgumentException()
