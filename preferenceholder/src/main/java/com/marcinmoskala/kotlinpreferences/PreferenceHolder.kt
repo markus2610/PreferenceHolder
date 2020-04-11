@@ -37,7 +37,7 @@ abstract class PreferenceHolder {
     }
 
     fun clearCache() {
-        forEachDelegate { delegate, property ->
+        forEachDelegate { delegate, _ ->
             delegate.clearCache()
         }
     }

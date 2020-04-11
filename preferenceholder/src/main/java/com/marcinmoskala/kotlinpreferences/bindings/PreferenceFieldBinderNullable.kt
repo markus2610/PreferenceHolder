@@ -23,8 +23,8 @@ internal class PreferenceFieldBinderNullable<T : Any>(
         field = null
     }
 
-    var propertySet: Boolean = false
-    var field: T? = null
+    private var propertySet: Boolean = false
+    private var field: T? = null
 
     override operator fun getValue(thisRef: PreferenceHolder, property: KProperty<*>): T? = when {
         testingMode -> field

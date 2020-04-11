@@ -23,7 +23,7 @@ internal class PreferenceFieldBinder<T : Any>(
     override fun clearCache() {
     }
 
-    var field: T? = null
+    private var field: T? = null
 
     override operator fun getValue(thisRef: PreferenceHolder, property: KProperty<*>): T = when {
         testingMode -> field ?: default

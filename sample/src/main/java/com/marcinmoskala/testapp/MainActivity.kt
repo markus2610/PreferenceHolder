@@ -1,7 +1,10 @@
 package com.marcinmoskala.testapp
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.marcinmoskala.kotlinpreferences.PreferenceHolder
+import com.marcinmoskala.kotlinpreferences.gson.GsonSerializer
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,10 +18,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        textEditView.setText(Pref.text)
+
+        PreferenceHolder.serializer = GsonSerializer(Gson())
+
+            textEditView.setText(Pref.text)
         numberEditView.setText(Pref.num.toString())
-        textEditView.setOnKeyListener { v, k, e -> Pref.text = text; true }
-        numberEditView.setOnKeyListener { v, k, e -> Pref.num = num; true }
+        textEditView.setOnKeyListener { _, _, _ -> Pref.text = text; true }
+        numberEditView.setOnKeyListener { _, _, _ -> Pref.num = num; true }
         saveObjectButton.setOnClickListener {
             val newObject = OtherPref.Together(text, num)
             OtherPref.together = newObject
